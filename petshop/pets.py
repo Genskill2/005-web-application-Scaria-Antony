@@ -18,17 +18,17 @@ def format_date(d):
 
 @bp.route("/search/<field>/<value>")
 def search(field, value):
+    # TBD
     conn = db.get_db()
     cursor = conn.cursor()
     oby = request.args.get("order_by", "id")
     order = request.args.get("order", "asc")
     print(oby)
-    if field=='tag':
-       st='''select s.id, s.name, s.bought, s.sold, a.name from pet s ,animal a, tag t ,tags_pets tb where t.name=? and t.id=tb.tag and s.id=tb.pet and s.species=a.id '''
+    if field == 'tag':
+       st = '''select s.id, s.name, s.bought, s.sold, a.name from pet s ,animal a, tag t ,tags_pets tb where t.name=? and t.id=tb.tag and s.id=tb.pet and s.species=a.id '''
        cursor.execute(st,(value,))
-    pets=cursor.fetchall()
-    order='asc'
-    # TBD
+    pets = cursor.fetchall()
+    order = 'asc'
     return render_template("search.html",pets=pets,field=field,value=value,order=order)
 
 @bp.route("/")
@@ -84,10 +84,9 @@ def edit(pid):
     elif request.method == "POST":
         description = request.form.get('description')
         sold = request.form.get("sold")
-        sold=datetime.date.today()
+        # TODO Handle sold
+        sold = datetime.date.today()
         cursor.execute("update pet set description=? where id=?;",(description,pid))
         cursor.execute("update pet set sold=? where id=?;",(sold,pid))
         conn.commit()
-        # TODO Handle sold
         return redirect(url_for("pets.pet_info", pid=pid), 302)
-        
